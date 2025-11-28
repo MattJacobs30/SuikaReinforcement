@@ -1,0 +1,5 @@
+*.zip
+logs_dqn/*
+models_dqn/*
+*.pyc
+__pycache__/*
