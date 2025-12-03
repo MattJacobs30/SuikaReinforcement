@@ -6,8 +6,6 @@ from suika.part2.config import config
 import time
 
 def main():
-    # Initialize environment in human mode
-    # We use continuous actions for smoother human control mapping
     env = SuikaEnv(render_mode="human", action_type="continuous")
     
     running = True
@@ -39,7 +37,6 @@ def main():
                                 waiting_for_input = False
                         
                         elif event.type == pygame.MOUSEBUTTONDOWN:
-                            # User clicked
                             mouse_x, _ = pygame.mouse.get_pos()
                             
                             pad_width = config.pad.right - config.pad.left
@@ -50,7 +47,6 @@ def main():
                             
                             waiting_for_input = False
 
-                    # Update visual cloud position
                     if waiting_for_input and running:
                         mouse_x, _ = pygame.mouse.get_pos()
                         env.cloud.curr.set_x(mouse_x)
@@ -58,7 +54,6 @@ def main():
                         env.clock.tick(60)
 
                 if action is not None:
-                    # Step environment
                     obs, reward, terminated, truncated, info = env.step(action)
                     
                     print(f"Action={action[0]:.2f}, Reward={reward}, Score={info['score']}, Game Over={terminated}")

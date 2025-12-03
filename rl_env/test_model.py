@@ -13,6 +13,7 @@ def main():
     parser.add_argument("--episodes", type=int, default=1, help="Number of episodes to run")
     parser.add_argument("--fps", type=int, default=60, help="Target FPS for viewing")
     parser.add_argument("--stochastic", action="store_true", help="Use stochastic (random) actions instead of deterministic")
+    parser.add_argument("--empty", action="store_true", help="Start with an empty board (no random fruits)")
     args = parser.parse_args()
 
     model_path = args.model
@@ -22,24 +23,22 @@ def main():
 
     print(f"Loading model from {model_path}...")
 
-    # Environment settings MUST match training
     env_kwargs = {
-        'render_mode': 'human', # We want to watch it
+        'render_mode': 'human',
         'action_type': 'discrete',
-        'discrete_bins': 15, 
+        'discrete_bins': 128, 
         'max_fruits': 50
     }
     
-    # Create single environment for testing
     env = SuikaEnv(**env_kwargs)
     
-    # Load the agent
     model = DQN.load(model_path, env=env)
 
     print(f"Starting testing... (Deterministic: {not args.stochastic})")
     
     for ep in range(args.episodes):
-        obs, info = env.reset()
+        reset_options = {"random_start": not args.empty}
+        obs, info = env.reset(options=reset_options)
         done = False
         truncated = False
         total_reward = 0
@@ -48,18 +47,14 @@ def main():
         print(f"Episode {ep+1} started.")
         
         while not (done or truncated):
-            # Predict action
             action, _states = model.predict(obs, deterministic=not args.stochastic)
             
-            # Step environment
             obs, reward, done, truncated, info = env.step(action)
             total_reward += reward
             step += 1
             
-            # Simple FPS limit
             time.sleep(1.0 / args.fps)
             
-            # Handle manual exit
             import pygame
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:

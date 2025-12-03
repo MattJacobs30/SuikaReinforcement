@@ -1,5 +1,7 @@
 *.zip
+!suika_dqn_mlp_final.zip
 logs_dqn/*
+rl_env/logs_dqn/*
 models_dqn/*
 *.pyc
 __pycache__/*
